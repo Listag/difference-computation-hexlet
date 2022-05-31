@@ -1,11 +1,12 @@
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
+import process from 'node:process';
 
 const getContent = (filePath) => {
   const fullPath = path.resolve(process.cwd(), "__fixtures__", filePath);
   const content = fs.readFileSync(fullPath, "utf-8");
-  const format = path.extname(filePath).slice(1);
+//   const format = path.extname(filePath).slice(1);
 
   return JSON.parse(content);
 };
