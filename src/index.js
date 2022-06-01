@@ -1,14 +1,15 @@
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
-import process from 'node:process';
+import process from "node:process";
+import parse from "./parsers.js";
 
-const getContent = (filePath) => {
-  const fullPath = path.resolve(process.cwd(), "__fixtures__", filePath);
+const getContent = (fileName) => {
+  const fullPath = path.resolve(process.cwd(), "__fixtures__", fileName);
   const content = fs.readFileSync(fullPath, "utf-8");
-//   const format = path.extname(filePath).slice(1);
+  const format = path.extname(fileName).slice(1);
 
-  return JSON.parse(content);
+  return parse(content, format);
 };
 
 const formDiff = (firstFileContent, secondFileContent) => {
@@ -16,9 +17,9 @@ const formDiff = (firstFileContent, secondFileContent) => {
   const secondFileKeys = Object.keys(secondFileContent);
   const mergeKeys = _.sortBy(_.union(firstFileKeys, secondFileKeys));
 
-// Отсутствие плюса или минуса говорит, что ключ есть в обоих файлах, и его значения совпадают. 
-// Во всех остальных ситуациях значение по ключу либо отличается, либо ключ есть только в одном файле.
-// Минус отвечает за первый файл, плюс - за второй
+  // Отсутствие плюса или минуса говорит, что ключ есть в обоих файлах, и его значения совпадают.
+  // Во всех остальных ситуациях значение по ключу либо отличается, либо ключ есть только в одном файле.
+  // Минус отвечает за первый файл, плюс - за второй
 
   const diff = mergeKeys.reduce((acc, key) => {
     if (_.has(firstFileContent, key) && _.has(secondFileContent, key)) {
@@ -34,7 +35,7 @@ const formDiff = (firstFileContent, secondFileContent) => {
       return `${acc}  + ${key}: ${secondFileContent[key]}\n`;
     }
     return acc;
-  }, '');
+  }, "");
   return `{\n${diff}}`;
 };
 
